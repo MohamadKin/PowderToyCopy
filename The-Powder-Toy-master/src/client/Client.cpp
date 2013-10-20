@@ -1995,7 +1995,45 @@ std::vector<std::pair<std::string, int> > * Client::GetTags(int start, int count
 		free(data);
 	return tagArray;
 }
-
+/*sorting method that sorts the saves depending on the rating
+ *saveArray: results to be sorted
+ *ascending: dirction of the sort
+ *return the resorted vector*/
+std::vector<SaveInfo*> * Client::Score(std::vector<SaveInfo*> * saveArray, bool ascending)
+{
+	int difference = 0;
+	int newArrayDiff = 0;
+	int pos = 0;
+	SaveInfo * tmp;
+	for(int saveArrayCounter = 0; saveArrayCounter < saveArray->size(); saveArrayCounter++)
+	{
+		for(int compareCounter = 0; compareCounter < (saveArray->size() - saveArrayCounter - 1); compareCounter++)
+		{
+			difference = saveArray->at(compareCounter)->GetVotesUp() - saveArray->at(compareCounter)->GetVotesDown();
+			newArrayDiff = saveArray->at(compareCounter + 1)->GetVotesUp() - saveArray->at(compareCounter + 1)->GetVotesDown();
+			if(ascending)
+			{
+				if(newArrayDiff > difference)
+				{
+					tmp = saveArray->at(compareCounter);
+					saveArray->at(compareCounter) = saveArray->at(compareCounter + 1);
+					saveArray->at(compareCounter + 1) = tmp;
+				}
+			}
+			else
+			{
+				if(newArrayDiff < difference)
+				{
+					tmp = saveArray->at(compareCounter);
+					saveArray->at(compareCounter) = saveArray->at(compareCounter + 1);
+					saveArray->at(compareCounter + 1) = tmp;
+				}
+			}
+		}
+	}
+	return saveArray;
+}
+//searching the saves are done here and retriving the list **done online on a server**
 std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string query, std::string sort, std::string category, int & resultCount)
 {
 	lastError = "";
@@ -2004,12 +2042,33 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 	std::stringstream urlStream;
 	char * data;
 	int dataStatus, dataLength;
+	bool sortByScore = false;
+	bool scoreType = false;
+	const char keyWordHighest [] = "vote=highest";
+	const char keyWordLowest [] = "vote=lowest";
 	urlStream << "http://" << SERVER << "/Browse.json?Start=" << start << "&Count=" << count;
 	if(query.length() || sort.length())
 	{
 		urlStream << "&Search_Query=";
 		if(query.length())
-			urlStream << URLEscape(query);
+		{
+			int pos = 0; 
+			if( query.find(keyWordHighest) != std::string::npos)
+			{
+				pos = query.find(keyWordHighest);
+				query.erase(pos, pos + strlen(keyWordHighest));
+				sortByScore = true;
+				scoreType = true;
+			}
+			else if( query.find(keyWordLowest) != std::string::npos)
+			{
+				pos = query.find(keyWordLowest);
+				query.erase(pos, pos + strlen(keyWordLowest));
+				sortByScore = true;
+			}
+			if(query.length())
+				urlStream << URLEscape(query);
+		}
 		if(sort == "date")
 		{
 			if(query.length())
@@ -2076,6 +2135,8 @@ std::vector<SaveInfo*> * Client::SearchSaves(int start, int count, std::string q
 	}
 	if(data)
 		free(data);
+	if(sortByScore)
+		return	Score(saveArray, scoreType);
 	return saveArray;
 }
 

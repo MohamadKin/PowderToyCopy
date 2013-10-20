@@ -79,7 +79,7 @@ private:
 	void notifyAuthUserChanged();
 	void notifyMessageOfTheDay();
 	void notifyNewNotification(std::pair<std::string, std::string> notification);
-
+	std::vector<SaveInfo*> * Score(std::vector<SaveInfo*> * saveArray, bool ascending);
 	//Config file handle
 	json::Object configDocument;
 public:

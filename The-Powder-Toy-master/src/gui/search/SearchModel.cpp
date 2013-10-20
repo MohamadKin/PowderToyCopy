@@ -35,7 +35,7 @@ void * SearchModel::updateSaveListTHelper(void * obj)
 }
 
 void * SearchModel::updateSaveListT()
-{
+{//getting the saves list in vector form ** client does that work
 	std::string category = "";
 	if(showFavourite)
 		category = "Favourites";
@@ -53,7 +53,7 @@ void * SearchModel::updateTagListTHelper(void * obj)
 }
 
 void * SearchModel::updateTagListT()
-{
+{//getting the tags list in vector form ** client does that work
 	int tagResultCount;
 	std::vector<std::pair<std::string, int> > * tagList = Client::Ref().GetTags(0, 24, "", tagResultCount);
 

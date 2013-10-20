@@ -8,6 +8,7 @@
 #include "gui/interface/RichLabel.h"
 #include "gui/interface/Textbox.h"
 #include "Misc.h"
+//this calls the search controller
 
 SearchView::SearchView():
 	ui::Window(ui::Point(0, 0), ui::Point(XRES+BARSIZE, YRES+MENUSIZE)),
@@ -229,7 +230,7 @@ void SearchView::NotifyMessageOfTheDay(Client * sender)
 }
 
 void SearchView::doSearch()
-{
+{//search done with the filed text as query
 	if (searchField->GetText().length() > 3 || !searchField->GetText().length())
 		c->DoSearch(searchField->GetText());
 }
@@ -266,13 +267,13 @@ SearchView::~SearchView()
 }
 
 void SearchView::Search(std::string query)
-{
+{//search string is passed as query
 	searchField->SetText(query);
 	c->DoSearch(query, true);
 }
 
 void SearchView::NotifySortChanged(SearchModel * sender)
-{
+{//best sorts by votes
 	if(sender->GetSort() == "best")
 	{
 		sortButton->SetToggleState(false);
@@ -508,7 +509,7 @@ void SearchView::NotifyTagListChanged(SearchModel * sender)
 }
 
 void SearchView::NotifySaveListChanged(SearchModel * sender)
-{
+{//clear the search screen
 	int i = 0;
 	int buttonWidth, buttonHeight, saveX = 0, saveY = 0, savesX = 5, savesY = 4, buttonPadding = 1;
 	int buttonAreaWidth, buttonAreaHeight, buttonXOffset, buttonYOffset;
@@ -553,6 +554,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			ownButton->Enabled = true;
 		sortButton->Enabled = true;
 	}
+	//nothing found
 	if(!saves.size())
 	{
 		loadingSpinner->Visible = false;
@@ -575,7 +577,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		}
 	}
 	else
-	{
+	{//still clearing
 		loadingSpinner->Visible = false;
 		if(errorLabel)
 		{
@@ -593,7 +595,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		buttonXOffset = buttonPadding;
 		buttonAreaWidth = Size.X;
 		buttonAreaHeight = Size.Y - buttonYOffset - 18;
-
+		
 		if(sender->GetShowTags())
 		{
 			buttonYOffset += (buttonAreaHeight/savesY) - buttonPadding*2;
@@ -636,7 +638,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			{
 				v->Search("user:"+sender->GetSave()->GetUserName());
 			}
-		};
+		};//recreating
 		for(i = 0; i < saves.size(); i++)
 		{
 			if(saveX == savesX)
